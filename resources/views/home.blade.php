@@ -79,7 +79,7 @@
                     <h1 class="modal-title fs-5" id="exampleModalLabel">Add New Student</h1>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
-                <form action="#" method="POST" enctype="multipart/form-data">
+                <form action="#" method="POST" id="add_new_student_form" enctype="multipart/form-data">
 
                     <div class="modal-body">
                         <input type="hidden" name="_token" value="{{ csrf_token() }}" />
@@ -109,7 +109,7 @@
                     </div>
                     <div class="modal-footer">
                         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                        <button type="submit" class="btn btn-primary">Add Student</button>
+                        <button type="submit" class="btn btn-primary" id="add_student_btn">Add Student</button>
                     </div>
                 </form>
             </div>
@@ -125,9 +125,46 @@
     <!-- Bootstrap -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
 
+    <!-- SweetAlert2 -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
     <script>
         $(document).ready(function() {
             $('#stuTable').DataTable();
+
+            $('#add_new_student_form').submit(function(e) {
+
+                e.preventDefault();
+                const fd=new FormData(this);
+
+                $('#add_student_btn').text('Adding...');
+
+                $.ajax({
+                    url: '{{route("store")}}',
+                    method: 'post',
+                    data: fd,
+                    cache:false,
+                    contentType:false,
+                    processData:false,
+                    dataType:'json',
+                    success:function(response){
+                        if(response.status == 200){
+                            Swal.fire(
+                                "Added !",
+                                "Student Added Successfully !",
+                                "success"
+                            )
+                            $('#add_student_btn').text('Add Student');
+                            $('#add_new_student_form')[0].reset();
+                            $('#addStudentModal').modal('hide');
+
+                        }
+                    }
+                })
+            });
+
+
+
         });
     </script>
 </body>
