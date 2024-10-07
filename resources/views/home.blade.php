@@ -50,20 +50,7 @@
                     </div>
 
                     <div class="card-body">
-                        <table id="stuTable" class="display">
-                            <thead>
-                                <tr>
-                                    <th>ID</th>
-                                    <th>Avatar</th>
-                                    <th>Name</th>
-                                    <th>E-mail</th>
-                                    <th>Action</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-
-                            </tbody>
-                        </table>
+                        <div id="show_all_student_data"></div>
                     </div>
                 </div>
 
@@ -77,6 +64,51 @@
             <div class="modal-content">
                 <div class="modal-header">
                     <h1 class="modal-title fs-5" id="exampleModalLabel">Add New Student</h1>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <form action="#" method="POST" id="add_new_student_form" enctype="multipart/form-data">
+
+                    <div class="modal-body">
+                        <input type="hidden" name="_token" value="{{ csrf_token() }}" />
+                        <div class="row">
+                            <div class="col-lg">
+                                <label for="fname">First Name</label>
+                                <input type="text" name="fname" class="form-control" required>
+                            </div>
+                            <div class="col-lg">
+                                <label for="fname">Last Name</label>
+                                <input type="text" name="lname" class="form-control" required>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-lg">
+                                <label for="fname">Email</label>
+                                <input type="email" name="email" class="form-control" required>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-lg">
+                                <label for="avatar">Avatar</label>
+                                <input type="file" name="avatar" class="form-control" required>
+                            </div>
+                        </div>
+
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                        <button type="submit" class="btn btn-primary" id="add_student_btn">Add Student</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!--Edit New Student Modal -->
+    <div class="modal fade" id="editStudentModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h1 class="modal-title fs-5" id="exampleModalLabel">Edit New Student</h1>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <form action="#" method="POST" id="add_new_student_form" enctype="multipart/form-data">
@@ -130,7 +162,7 @@
 
     <script>
         $(document).ready(function() {
-            $('#stuTable').DataTable();
+            
 
             $('#add_new_student_form').submit(function(e) {
 
@@ -157,11 +189,26 @@
                             $('#add_student_btn').text('Add Student');
                             $('#add_new_student_form')[0].reset();
                             $('#addStudentModal').modal('hide');
+                            fetchAllStudents();
 
                         }
                     }
                 })
             });
+
+            fetchAllStudents();
+
+            function fetchAllStudents(){
+                $.ajax({
+                    url:'{{ route("fetchAll") }}',
+                    method:"get",
+                    success:function(response){
+                        $('#show_all_student_data').html(response);
+                        $('#stuTable').DataTable();
+                    }
+
+                });
+            }
 
 
 

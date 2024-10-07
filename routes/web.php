@@ -8,3 +8,4 @@ Route::get('/', function () {
 });
 
 Route::post('/store',[studentController::class,'store'])->name('store');
+Route::get('/fetchAll',[studentController::class,'fetchAll'])->name('fetchAll');
