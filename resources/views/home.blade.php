@@ -111,37 +111,39 @@
                     <h1 class="modal-title fs-5" id="exampleModalLabel">Edit New Student</h1>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
-                <form action="#" method="POST" id="add_new_student_form" enctype="multipart/form-data">
+                <form action="#" method="POST" id="update_student_form" enctype="multipart/form-data">
 
                     <div class="modal-body">
                         <input type="hidden" name="_token" value="{{ csrf_token() }}" />
+                        <input type="hidden" name="user_id" id="user_id">
                         <div class="row">
                             <div class="col-lg">
                                 <label for="fname">First Name</label>
-                                <input type="text" name="fname" class="form-control" required>
+                                <input type="text" id="fname" name="fname" class="form-control" required>
                             </div>
                             <div class="col-lg">
                                 <label for="fname">Last Name</label>
-                                <input type="text" name="lname" class="form-control" required>
+                                <input type="text" id="lname" name="lname" class="form-control" required>
                             </div>
                         </div>
                         <div class="row">
                             <div class="col-lg">
                                 <label for="fname">Email</label>
-                                <input type="email" name="email" class="form-control" required>
+                                <input type="email" id="email" name="email" class="form-control" required>
                             </div>
                         </div>
                         <div class="row">
+                            <div id="avatar"></div>
                             <div class="col-lg">
                                 <label for="avatar">Avatar</label>
-                                <input type="file" name="avatar" class="form-control" required>
+                                <input type="file" name="avatar" class="form-control">
                             </div>
                         </div>
 
                     </div>
                     <div class="modal-footer">
                         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                        <button type="submit" class="btn btn-primary" id="add_student_btn">Add Student</button>
+                        <button type="submit" class="btn btn-primary" id="update_student_btn">Update Student</button>
                     </div>
                 </form>
             </div>
@@ -162,12 +164,12 @@
 
     <script>
         $(document).ready(function() {
-            
+
 
             $('#add_new_student_form').submit(function(e) {
 
                 e.preventDefault();
-                const fd=new FormData(this);
+                const fd = new FormData(this);
 
                 $('#add_student_btn').text('Adding...');
 
@@ -175,12 +177,12 @@
                     url: '{{route("store")}}',
                     method: 'post',
                     data: fd,
-                    cache:false,
-                    contentType:false,
-                    processData:false,
-                    dataType:'json',
-                    success:function(response){
-                        if(response.status == 200){
+                    cache: false,
+                    contentType: false,
+                    processData: false,
+                    dataType: 'json',
+                    success: function(response) {
+                        if (response.status == 200) {
                             Swal.fire(
                                 "Added !",
                                 "Student Added Successfully !",
@@ -196,13 +198,69 @@
                 })
             });
 
+            $(document).on('click', '.userEditBtn', function(e) {
+                e.preventDefault();
+                var id = $(this).attr('id');
+
+                $.ajax({
+                    url: '{{route("edit")}}',
+                    method: 'get',
+                    data: {
+                        id: id,
+                        _token: '{{csrf_token()}}'
+                    },
+                    success: function(response) {
+                        $('#fname').val(response.first_name);
+                        $('#lname').val(response.last_name);
+                        $('#email').val(response.email);
+                        $('#avatar').html(
+                            `<img src="storage/images/${response.avatar}" width="100px" height="100px" class='img-field img-thumbnail rounded-circle'>`
+                        );
+                        $('#user_id').val(response.id);
+
+                    }
+                })
+            });
+
+            $('#update_student_form').submit(function(e) {
+
+                e.preventDefault();
+                const fd = new FormData(this);
+
+                $('#update_student_btn').text('Updating...');
+
+                $.ajax({
+                    url: '{{route("update")}}',
+                    method: 'post',
+                    data: fd,
+                    cache: false,
+                    contentType: false,
+                    processData: false,
+                    dataType: 'json',
+                    success: function(response) {
+                        if (response.status == 200) {
+                            Swal.fire(
+                                "Updated !",
+                                "Student Updated Successfully !",
+                                "success"
+                            )
+                            $('#update_student_btn').text('Update Student');
+                            $('#update_student_form')[0].reset();
+                            $('#editStudentModal').modal('hide');
+                            fetchAllStudents();
+
+                        }
+                    }
+                })
+            });
+
             fetchAllStudents();
 
-            function fetchAllStudents(){
+            function fetchAllStudents() {
                 $.ajax({
-                    url:'{{ route("fetchAll") }}',
-                    method:"get",
-                    success:function(response){
+                    url: '{{ route("fetchAll") }}',
+                    method: "get",
+                    success: function(response) {
                         $('#show_all_student_data').html(response);
                         $('#stuTable').DataTable();
                     }

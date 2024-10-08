@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Student;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
 
 class studentController extends Controller
 {
@@ -67,4 +68,43 @@ class studentController extends Controller
             echo "<h3 align='center'>No Record in the Database</h3>";
         }
     }
+
+    public function edit(Request $request){
+        $userId=$request->id;
+
+        $student=Student::find($userId);
+        return response()->json($student);
+    }
+    public function update(Request $request){
+        
+        $fileName='';
+        $student=Student::find($request->user_id);
+        if($request->hasFile('avatar')){
+            $file = $request->file('avatar');
+            $fileName = time() . '.' . $file->getClientOriginalExtension();
+            $file->storeAs('public/images', $fileName);
+            if($student->avatar){
+                Storage::delete('public/images/'.$student->avatar);
+            }
+        }else{
+            $fileName=$student->avatar;
+        }
+    
+        $stuData = [
+            'first_name' => $request->fname,
+            'last_name' => $request->lname,
+            'email' => $request->email,
+            'avatar' => $fileName,
+        ];
+
+        $student->update($stuData);
+
+        return response()->json([
+            'status' => 200,
+        ]);
+    }
+
+
+
+
 }
