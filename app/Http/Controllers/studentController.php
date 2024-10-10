@@ -11,7 +11,8 @@ class studentController extends Controller
     public function store(Request $request)
     {
         $file = $request->file('avatar');
-        $fileName = time() . '.' . $file->getClientOriginalExtension();
+        //$fileName = time() . '.' . $file->getClientOriginalExtension();
+        $fileName = $file->getClientOriginalName();
         $file->storeAs('public/images', $fileName);
 
         $stuData = [
@@ -55,7 +56,9 @@ class studentController extends Controller
                     <th><img src='storage/images/".$student->avatar."' width='50px' height='50px' class='img-thumbnail rounded-circle'></th>
                     <th>".$student->first_name." ".$student->last_name."</th>
                     <th>".$student->email."</th>
-                    <th><a href='#' id='".$student->id."' class='userEditBtn'  data-bs-toggle='modal' data-bs-target='#editStudentModal'>Edit</a> | Delete</th>
+                    <th><a href='#' id='".$student->id."' class='userEditBtn'  data-bs-toggle='modal' data-bs-target='#editStudentModal'>Edit</a> | 
+                        <a href='#' id='".$student->id."' class='deleteBtn'>Delete</a>
+                    </th>
                 </tr>
                 ";
             }
@@ -81,7 +84,9 @@ class studentController extends Controller
         $student=Student::find($request->user_id);
         if($request->hasFile('avatar')){
             $file = $request->file('avatar');
-            $fileName = time() . '.' . $file->getClientOriginalExtension();
+            // $fileName = time() . '.' . $file->getClientOriginalExtension();
+            $fileName = $file->getClientOriginalName();
+           
             $file->storeAs('public/images', $fileName);
             if($student->avatar){
                 Storage::delete('public/images/'.$student->avatar);
@@ -102,6 +107,23 @@ class studentController extends Controller
         return response()->json([
             'status' => 200,
         ]);
+    }
+
+    function delete(Request $request){
+        $id=$request->id;
+
+        $stuData=Student::find($id);
+
+        if(Storage::delete('public/images/'.$stuData->avatar)){
+            Student::destroy($id);
+            return response()->json([
+                'status'=> 'ok',
+            ]);
+        }else{
+            return response()->json([
+                'status'=> 'error',
+            ]);
+        }
     }
 
 

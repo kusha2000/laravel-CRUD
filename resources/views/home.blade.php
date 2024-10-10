@@ -268,6 +268,44 @@
                 });
             }
 
+            $(document).on('click','.deleteBtn',function(e){
+                e.preventDefault();
+
+                let id=$(this).attr('id');
+                let csrf='{{csrf_token()}}';
+
+                Swal.fire({
+                    title:'Are you sure ?',
+                    text:"You won't be able to revet this !",
+                    icon:"warning",
+                    showCancelButton:true,
+                    confirmButtonColor:'red',
+                    confirmButtonText:'Yes, Delete it !',
+                    cancelButtonColor:'green',
+                }).then((result)=>{
+                    if(result.isConfirmed){
+                        $.ajax({
+                            url:'{{route("delete")}}',
+                            method:'delete',
+                            data:{
+                                id:id,
+                                _token:csrf
+                            },
+                            success:function(response){
+                                console.log(response);
+                                Swal.fire(
+                                    'Deleted!',
+                                    'Your file has been deleted',
+                                    'success'
+                                );
+                                fetchAllStudents();
+                            }
+                            
+                        })
+                    }
+                })
+            })
+
 
 
         });
