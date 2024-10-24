@@ -56,8 +56,9 @@ class studentController extends Controller
                     <th><img src='storage/images/".$student->avatar."' width='50px' height='50px' class='img-thumbnail rounded-circle'></th>
                     <th>".$student->first_name." ".$student->last_name."</th>
                     <th>".$student->email."</th>
-                    <th><a href='#' id='".$student->id."' class='userEditBtn'  data-bs-toggle='modal' data-bs-target='#editStudentModal'>Edit</a> | 
-                        <a href='#' id='".$student->id."' class='deleteBtn'>Delete</a>
+                    <th>
+                    <button type='button' id='".$student->id."' class='btn btn-success userEditBtn' data-bs-toggle='modal' data-bs-target='#editStudentModal'>Edit</button> | 
+                    <button type='button' id='".$student->id."' class='btn btn-danger deleteBtn'>Delete</button>
                     </th>
                 </tr>
                 ";
